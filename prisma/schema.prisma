@@ -6,13 +6,28 @@ datasource db {
   provider = "postgresql"
 }
 
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
 model User {
-  id        String   @id @default(uuid())
+  id        String   @id @default(cuid())
   name      String?
   email     String   @unique
-  password  String?
+  password  String
   image     String?
+
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   workspaces Workspace[] @relation("WorkspaceOwner")
   tasks      Task[]
@@ -20,46 +35,64 @@ model User {
 }
 
 model Workspace {
-  id        String   @id @default(uuid())
-  name      String
-  ownerId   String
-  createdAt DateTime @default(now())
+  id          String   @id @default(cuid())
+  name        String
+  description String?
 
-  owner   User      @relation("WorkspaceOwner", fields: [ownerId], references: [id])
+  ownerId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  owner    User      @relation("WorkspaceOwner", fields: [ownerId], references: [id])
   projects Project[]
 }
 
 model Project {
-  id          String   @id @default(uuid())
+  id          String   @id @default(cuid())
   title       String
+  description String?
+
   workspaceId String
-  createdAt   DateTime @default(now())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   workspace Workspace @relation(fields: [workspaceId], references: [id])
   tasks     Task[]
 }
 
 model Task {
-  id          String   @id @default(uuid())
+  id          String       @id @default(cuid())
   title       String
   description String?
-  status      String   @default("TODO")
-  priority    String   @default("MEDIUM")
-  projectId   String
-  assigneeId  String?
-  dueDate     DateTime?
 
-  project   Project @relation(fields: [projectId], references: [id])
-  assignee  User?   @relation(fields: [assigneeId], references: [id])
-  comments  Comment[]
+  status   TaskStatus   @default(TODO)
+  priority TaskPriority @default(MEDIUM)
+
+  dueDate DateTime?
+
+  projectId  String
+  assigneeId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  project  Project @relation(fields: [projectId], references: [id])
+  assignee User?   @relation(fields: [assigneeId], references: [id])
+
+  comments Comment[]
 }
 
 model Comment {
-  id        String   @id @default(uuid())
-  content   String
-  taskId    String
-  authorId  String
+  id      String @id @default(cuid())
+  content String
+
+  taskId   String
+  authorId String
+
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   task   Task @relation(fields: [taskId], references: [id])
   author User @relation(fields: [authorId], references: [id])
