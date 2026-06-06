@@ -8,31 +8,38 @@ export async function POST(req: Request) {
   try {
     const body = await req.json()
 
-    const parsed =
-      registerSchema.safeParse(body)
+    const parsed = registerSchema.safeParse(body)
 
     if (!parsed.success) {
       return NextResponse.json(
-        { error: "Invalid input" },
-        { status: 400 }
+        {
+          success: false,
+          error: "Invalid input",
+        },
+        {
+          status: 400,
+        }
       )
     }
 
-    const {
-      name,
-      email,
-      password,
-    } = parsed.data
+    const { name, email, password } = parsed.data
 
     const existingUser =
       await prisma.user.findUnique({
-        where: { email },
+        where: {
+          email,
+        },
       })
 
     if (existingUser) {
       return NextResponse.json(
-        { error: "Email already exists" },
-        { status: 409 }
+        {
+          success: false,
+          error: "Email already exists",
+        },
+        {
+          status: 409,
+        }
       )
     }
 
@@ -50,17 +57,30 @@ export async function POST(req: Request) {
           id: true,
           name: true,
           email: true,
+          createdAt: true,
         },
       })
 
     return NextResponse.json(
-      user,
-      { status: 201 }
+      {
+        success: true,
+        user,
+      },
+      {
+        status: 201,
+      }
     )
-  } catch {
+  } catch (error) {
+    console.error("Register Error:", error)
+
     return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
+      {
+        success: false,
+        error: "Internal server error",
+      },
+      {
+        status: 500,
+      }
     )
   }
 }
