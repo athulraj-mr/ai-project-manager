@@ -38,3 +38,38 @@ export async function POST(req: Request) {
     )
   }
 }
+
+
+export async function GET() {
+  try {
+    const session = await auth()
+
+    if (!session?.user?.email) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      )
+    }
+
+    const workspaces =
+      await prisma.workspace.findMany({
+        where: {
+          owner: {
+            email: session.user.email,
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      })
+
+    return NextResponse.json(workspaces)
+  } catch (error) {
+    console.error(error)
+
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    )
+  }
+}
