@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation"
 import { auth } from "@/auth"
+import { CreateWorkspaceForm } from "@/components/workspace/create-workspace-form"
 
 export default async function DashboardPage() {
   const session = await auth()
@@ -14,14 +15,12 @@ export default async function DashboardPage() {
         Dashboard
       </h1>
 
-      <div className="mt-4 space-y-2">
-        <p>
-          Welcome {session.user?.name}
-        </p>
+      <p>
+        Welcome {session.user?.name}
+      </p>
 
-        <p>
-          Email: {session.user?.email}
-        </p>
+      <div className="mt-8">
+        <CreateWorkspaceForm />
       </div>
     </main>
   )
