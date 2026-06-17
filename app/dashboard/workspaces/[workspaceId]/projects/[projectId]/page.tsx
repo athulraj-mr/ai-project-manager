@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation"
-
 import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
+import { CreateTaskForm } from "@/components/task/create-task-form"
 
 interface PageProps {
   params: Promise<{
@@ -9,6 +9,7 @@ interface PageProps {
     projectId: string
   }>
 }
+
 
 export default async function ProjectPage({
   params,
@@ -54,7 +55,9 @@ export default async function ProjectPage({
       )}
 
       <div className="mt-8">
-        Tasks coming soon...
+        <CreateTaskForm
+          projectId={project.id}
+        />
       </div>
     </main>
   )
