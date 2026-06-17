@@ -4,6 +4,7 @@ import { useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 
 interface Props {
   workspaceId: string
@@ -12,13 +13,14 @@ interface Props {
 export function CreateProjectForm({
   workspaceId,
 }: Props) {
-  const [title, setTitle] =
+  const [title, setTitle] = useState("")
+  const [description, setDescription] =
     useState("")
   const [loading, setLoading] =
     useState(false)
 
   async function handleSubmit(
-    e: React.FormEvent
+    e: React.FormEvent<HTMLFormElement>
   ) {
     e.preventDefault()
 
@@ -34,6 +36,7 @@ export function CreateProjectForm({
         },
         body: JSON.stringify({
           title,
+          description,
           workspaceId,
         }),
       }
@@ -41,6 +44,7 @@ export function CreateProjectForm({
 
     if (response.ok) {
       setTitle("")
+      setDescription("")
       location.reload()
     }
 
@@ -50,7 +54,7 @@ export function CreateProjectForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex gap-2"
+      className="space-y-4"
     >
       <Input
         placeholder="Project title"
@@ -60,11 +64,21 @@ export function CreateProjectForm({
         }
       />
 
+      <Textarea
+        placeholder="Project description"
+        value={description}
+        onChange={(e) =>
+          setDescription(e.target.value)
+        }
+      />
+
       <Button
         type="submit"
         disabled={loading}
       >
-        Create
+        {loading
+          ? "Creating..."
+          : "Create Project"}
       </Button>
     </form>
   )

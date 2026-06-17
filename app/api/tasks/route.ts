@@ -17,36 +17,41 @@ export async function POST(req: Request) {
     const {
       title,
       description,
-      workspaceId,
+      priority,
+      projectId,
     } = await req.json()
 
-    const workspace =
-      await prisma.workspace.findFirst({
+    const project =
+      await prisma.project.findFirst({
         where: {
-          id: workspaceId,
-          owner: {
-            email: session.user.email,
+          id: projectId,
+          workspace: {
+            owner: {
+              email:
+                session.user.email,
+            },
           },
         },
       })
 
-    if (!workspace) {
+    if (!project) {
       return NextResponse.json(
-        { error: "Workspace not found" },
+        { error: "Project not found" },
         { status: 404 }
       )
     }
 
-    const project =
-      await prisma.project.create({
+    const task =
+      await prisma.task.create({
         data: {
           title,
           description,
-          workspaceId,
+          priority,
+          projectId,
         },
       })
 
-    return NextResponse.json(project)
+    return NextResponse.json(task)
   } catch (error) {
     console.error(error)
 
