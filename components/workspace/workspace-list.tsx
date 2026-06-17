@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
+import Link from "next/link"
 
 export async function WorkspaceList() {
   const session = await auth()
@@ -35,9 +36,14 @@ export async function WorkspaceList() {
           key={workspace.id}
           className="rounded-lg border p-4"
         >
-          <h3 className="font-medium">
-            {workspace.name}
-          </h3>
+          <Link
+            href={`/dashboard/workspaces/${workspace.id}`}
+            className="block rounded-lg border p-4"
+          >
+            <h3 className="font-medium">
+              {workspace.name}
+            </h3>
+          </Link>
         </div>
       ))}
     </div>
