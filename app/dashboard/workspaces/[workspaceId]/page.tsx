@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation"
-
 import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
+import { CreateProjectForm } from "@/components/project/create-project-form"
+import { ProjectList } from "@/components/project/project-list"
 
 interface PageProps {
   params: Promise<{
@@ -9,9 +10,8 @@ interface PageProps {
   }>
 }
 
-export default async function WorkspacePage({
-  params,
-}: PageProps) {
+
+export default async function WorkspacePage({ params, }: PageProps) {
   const session = await auth()
 
   if (!session?.user?.email) {
@@ -36,14 +36,20 @@ export default async function WorkspacePage({
 
   return (
     <main className="p-8">
-      <h1 className="text-3xl font-bold">
+        <h1 className="text-3xl font-bold">
         {workspace.name}
-      </h1>
+        </h1>
 
-      <p className="mt-4">
+        <p className="mt-4">
         Workspace ID:
         {workspace.id}
-      </p>
+        </p>
+
+        <CreateProjectForm workspaceId={workspace.id} />
+
+        <div className="mt-8">
+            <ProjectList workspaceId={workspace.id} />
+        </div>
     </main>
   )
 }
