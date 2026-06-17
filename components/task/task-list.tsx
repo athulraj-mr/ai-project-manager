@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma"
+import { TaskStatusButton } from "@/components/task/task-status-button"
 
 interface Props {
   projectId: string
@@ -43,9 +44,10 @@ export async function TaskList({
           )}
 
           <div className="mt-3 flex gap-2 text-sm">
-            <span>
-              Status: {task.status}
-            </span>
+            <TaskStatusButton
+            taskId={task.id}
+            status={task.status}
+            />
 
             <span>
               Priority: {task.priority}
